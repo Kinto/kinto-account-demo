@@ -4,7 +4,7 @@ import Browser exposing (Document)
 import Css exposing (..)
 import Data.Session exposing (Session)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (class, css, href, src)
+import Html.Styled.Attributes exposing (class, css, href)
 import Route
 import Views.Theme exposing (Element, defaultCss)
 
@@ -33,20 +33,6 @@ frame config ( title, content ) =
             |> toUnstyled
         ]
     }
-
-
-githubIconStyle : Element msg
-githubIconStyle =
-    styled a
-        [ position absolute
-        , top (px 15)
-        , right (px 15)
-        , border3 (px 1) solid (rgba 255 255 255 0.3)
-        , padding (px 10)
-        , borderRadius (px 4)
-        , color (hex "999")
-        , textDecoration none
-        ]
 
 
 heading1 : Element msg

@@ -1,15 +1,12 @@
 module Page.Validate exposing (Model, Msg, init, update, view)
 
-import Css exposing (color, fontSize, margin2, rgb, zero)
-import Data.Session as Session exposing (Session)
+import Css exposing (color, rgb)
+import Data.Session exposing (Session)
 import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import Http exposing (Error(..))
-import Ports
 import Request.Accounts exposing (errorToString, validateKey)
-import Route
-import Views.Theme exposing (Element)
 
 
 type alias Model =
@@ -70,7 +67,7 @@ update ({ store } as session) msg model =
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
-view _ model =
+view session model =
     ( "Validate"
     , [ h1 [] [ text "Validate your account" ]
       , Html.form [ onSubmit Validate ]
@@ -80,6 +77,12 @@ view _ model =
 
               else
                 div [] []
+            , p []
+                [ label []
+                    [ text "Server: "
+                    , input [ type_ "text", onInput SetServer, value session.store.server ] []
+                    ]
+                ]
             , p []
                 [ label []
                     [ text "E-mail: "

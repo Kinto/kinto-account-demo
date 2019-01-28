@@ -17,6 +17,7 @@ type alias Session =
     }
 
 
+kintoServer : String
 kintoServer =
     "http://localhost:8888/v1"
 
@@ -25,7 +26,9 @@ kintoServer =
 across browser restarts, typically in localStorage.
 -}
 type alias Store =
-    { server : String, login : String }
+    { server : String
+    , login : String
+    }
 
 
 defaultStore : Store

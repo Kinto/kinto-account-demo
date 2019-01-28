@@ -1,6 +1,5 @@
 module Page.Home exposing (Model, Msg(..), init, update, view)
 
-import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Css exposing (..)
 import Data.Session exposing (Session)
@@ -8,10 +7,8 @@ import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import Http exposing (Error(..))
-import Markdown
 import Request.Accounts exposing (createAccount, errorToString)
 import Route exposing (Route(..))
-import Task
 
 
 type alias Model =
