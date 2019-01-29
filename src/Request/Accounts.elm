@@ -87,7 +87,7 @@ resetPassword msg session login =
 changePassword : (Result Http.Error () -> msg) -> Session -> Login -> CurrentPassword -> NewPassword -> Cmd msg
 changePassword msg session login currentPassword newPassword =
     Http.request
-        { method = "POST"
+        { method = "PATCH"
         , headers = [ buildAuthorizationHeader login currentPassword ]
         , url = session.store.server ++ "/accounts/" ++ login
         , body = Http.jsonBody <| encodePassword newPassword
