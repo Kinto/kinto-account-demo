@@ -19,7 +19,7 @@ type alias Session =
 
 kintoServer : String
 kintoServer =
-    "http://localhost:8888/v1"
+    "https://natim.alwaysdata.net/v1"
 
 
 {-| A serializable data structure holding session information you want to share
