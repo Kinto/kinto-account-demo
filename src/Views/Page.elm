@@ -4,7 +4,7 @@ import Browser exposing (Document)
 import Css exposing (..)
 import Data.Session exposing (Session)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (class, css, href)
+import Html.Styled.Attributes exposing (class, css, href, src)
 import Route
 import Views.Theme exposing (Element, defaultCss)
 
@@ -35,6 +35,20 @@ frame config ( title, content ) =
             |> toUnstyled
         ]
     }
+
+
+githubIconStyle : Element msg
+githubIconStyle =
+    styled a
+        [ position absolute
+        , top (px 15)
+        , right (px 15)
+        , border3 (px 1) solid (rgba 255 255 255 0.3)
+        , padding (px 10)
+        , borderRadius (px 4)
+        , color (hex "999")
+        , textDecoration none
+        ]
 
 
 heading1 : Element msg
@@ -68,5 +82,20 @@ viewHeader { activePage } =
             , linkIf ResetPassword Route.ResetPassword "Reset my password"
             , text " | "
             , linkIf ChangePassword (Route.ChangePassword "") "Change my password"
+            ]
+        , githubIconStyle
+            [ Html.Styled.Attributes.target "_blank"
+            , href "https://github.com/Kinto/kinto-account-demo/"
+            ]
+            [ img
+                [ src "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Ei-sc-github.svg/768px-Ei-sc-github.svg.png"
+                , css
+                    [ width (px 96)
+                    , height (px 96)
+                    , float left
+                    ]
+                ]
+                []
+            , span [ css [ color (hex "000"), display block, textAlign center ] ] [ text "Github" ]
             ]
         ]
