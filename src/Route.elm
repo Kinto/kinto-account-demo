@@ -10,6 +10,8 @@ import Url.Parser as Parser exposing ((</>), Parser)
 type Route
     = Home
     | Validate String
+    | ResetPassword
+    | ChangePassword String
 
 
 parser : Parser (Route -> a) a
@@ -18,6 +20,11 @@ parser =
         [ Parser.map Home Parser.top
         , Parser.map (Validate "") (Parser.s "validate")
         , Parser.map Validate (Parser.s "validate" </> Parser.string)
+        , Parser.map ResetPassword (Parser.s "reset-password")
+        , Parser.map ChangePassword (Parser.s "reset-password" </> Parser.string)
+        , Parser.map (ChangePassword "") (Parser.s "change-password")
+        , Parser.map ChangePassword (Parser.s "reset-password" </> Parser.string)
+        , Parser.map ChangePassword (Parser.s "change-password" </> Parser.string)
         ]
 
 
@@ -47,5 +54,11 @@ toString route =
 
                 Validate activationKey ->
                     [ "validate", activationKey ]
+
+                ResetPassword ->
+                    [ "reset-password" ]
+
+                ChangePassword currentPassword ->
+                    [ "change-password", currentPassword ]
     in
     "#/" ++ String.join "/" pieces

@@ -1,5 +1,6 @@
-module Request.Accounts exposing (createAccount, errorToString, validateKey)
+module Request.Accounts exposing (changePassword, createAccount, errorToString, resetPassword, validateKey)
 
+import BasicAuth exposing (buildAuthorizationHeader)
 import Data.Session exposing (Session)
 import Http exposing (Error(..))
 import Json.Encode as Encode
@@ -14,6 +15,14 @@ type alias Password =
 
 
 type alias Key =
+    String
+
+
+type alias CurrentPassword =
+    String
+
+
+type alias NewPassword =
     String
 
 
@@ -64,3 +73,36 @@ validateKey msg session login key =
         , body = Http.emptyBody
         , expect = Http.expectWhatever msg
         }
+
+
+resetPassword : (Result Http.Error () -> msg) -> Session -> Login -> Cmd msg
+resetPassword msg session login =
+    Http.post
+        { url = session.store.server ++ "/accounts/" ++ login ++ "/reset-password"
+        , body = Http.emptyBody
+        , expect = Http.expectWhatever msg
+        }
+
+
+changePassword : (Result Http.Error () -> msg) -> Session -> Login -> CurrentPassword -> NewPassword -> Cmd msg
+changePassword msg session login currentPassword newPassword =
+    Http.request
+        { method = "POST"
+        , headers = [ buildAuthorizationHeader login currentPassword ]
+        , url = session.store.server ++ "/accounts/" ++ login
+        , body = Http.jsonBody <| encodePassword newPassword
+        , expect = Http.expectWhatever msg
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+encodePassword : Password -> Encode.Value
+encodePassword password =
+    Encode.object
+        [ ( "data"
+          , Encode.object
+                [ ( "password", Encode.string password )
+                ]
+          )
+        ]

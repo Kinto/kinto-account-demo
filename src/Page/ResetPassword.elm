@@ -1,4 +1,4 @@
-module Page.Validate exposing (Model, Msg, init, update, view)
+module Page.ResetPassword exposing (Model, Msg, init, update, view)
 
 import Css exposing (color, rgb)
 import Data.Session exposing (Session)
@@ -6,31 +6,28 @@ import Html.Styled as Html exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import Http exposing (Error(..))
-import Request.Accounts exposing (errorToString, validateKey)
+import Request.Accounts exposing (errorToString, resetPassword)
 
 
 type alias Model =
     { login : String
-    , key : String
     , error : Maybe String
-    , validated : Bool
+    , reset : Bool
     }
 
 
 type Msg
     = SetServer String
     | SetEmail String
-    | SetActivationKey String
-    | Validate
-    | AccountValidated (Result Error ())
+    | ResetPassword
+    | AccountReset (Result Error ())
 
 
-init : String -> Session -> ( Model, Session, Cmd Msg )
-init activationKey session =
+init : Session -> ( Model, Session, Cmd Msg )
+init session =
     ( { login = session.store.login
-      , key = activationKey
       , error = Nothing
-      , validated = False
+      , reset = False
       }
     , session
     , Cmd.none
@@ -50,30 +47,27 @@ update ({ store } as session) msg model =
         SetEmail value ->
             ( { model | login = value }, session, Cmd.none )
 
-        SetActivationKey value ->
-            ( { model | key = value }, session, Cmd.none )
+        ResetPassword ->
+            ( model, session, resetPassword AccountReset session model.login )
 
-        Validate ->
-            ( model, session, validateKey AccountValidated session model.login model.key )
-
-        AccountValidated (Ok ()) ->
-            ( { model | validated = True, login = "", key = "", error = Nothing }
+        AccountReset (Ok ()) ->
+            ( { model | reset = True, login = "", error = Nothing }
             , session
             , Cmd.none
             )
 
-        AccountValidated (Err err) ->
+        AccountReset (Err err) ->
             ( { model | error = Just <| errorToString err }, session, Cmd.none )
 
 
 view : Session -> Model -> ( String, List (Html Msg) )
 view session model =
-    ( "Validate"
-    , [ h1 [] [ text "Validate your account" ]
-      , Html.form [ onSubmit Validate ]
+    ( "Reset Password"
+    , [ h1 [] [ text "Reset your account password" ]
+      , Html.form [ onSubmit ResetPassword ]
             [ displayError model.error
-            , if model.validated then
-                div [ css [ color (rgb 12 120 12) ] ] [ text "Account validated" ]
+            , if model.reset then
+                div [ css [ color (rgb 12 120 12) ] ] [ text "Mail sent" ]
 
               else
                 div [] []
@@ -89,13 +83,7 @@ view session model =
                     , input [ type_ "text", onInput SetEmail, value model.login ] []
                     ]
                 ]
-            , p []
-                [ label []
-                    [ text "Activation Key: "
-                    , input [ type_ "text", onInput SetActivationKey, value model.key ] []
-                    ]
-                ]
-            , button [ type_ "submit" ] [ text "Validate account" ]
+            , button [ type_ "submit" ] [ text "Reset account password" ]
             ]
       ]
     )

@@ -4,7 +4,9 @@ import Browser exposing (Document)
 import Browser.Navigation as Nav
 import Data.Session as Session exposing (Session)
 import Html.Styled as Html exposing (..)
+import Page.ChangePassword as ChangePassword
 import Page.Home as Home
+import Page.ResetPassword as ResetPassword
 import Page.Validate as Validate
 import Ports
 import Route exposing (Route)
@@ -22,6 +24,8 @@ type Page
     = Blank
     | HomePage Home.Model
     | ValidatePage Validate.Model
+    | ResetPasswordPage ResetPassword.Model
+    | ChangePasswordPage ChangePassword.Model
     | NotFound
 
 
@@ -34,6 +38,8 @@ type alias Model =
 type Msg
     = HomeMsg Home.Msg
     | ValidateMsg Validate.Msg
+    | ResetPasswordMsg ResetPassword.Msg
+    | ChangePasswordMsg ChangePassword.Msg
     | StoreChanged String
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
@@ -62,6 +68,12 @@ setRoute maybeRoute model =
 
         Just (Route.Validate activationKey) ->
             toPage ValidatePage (Validate.init activationKey) ValidateMsg
+
+        Just Route.ResetPassword ->
+            toPage ResetPasswordPage ResetPassword.init ResetPasswordMsg
+
+        Just (Route.ChangePassword currentPassword) ->
+            toPage ChangePasswordPage (ChangePassword.init currentPassword) ChangePasswordMsg
 
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -102,8 +114,14 @@ update msg ({ page, session } as model) =
         ( HomeMsg homeMsg, HomePage homeModel ) ->
             toPage HomePage HomeMsg Home.update homeMsg homeModel
 
-        ( ValidateMsg counterMsg, ValidatePage counterModel ) ->
-            toPage ValidatePage ValidateMsg Validate.update counterMsg counterModel
+        ( ValidateMsg validateMsg, ValidatePage validateModel ) ->
+            toPage ValidatePage ValidateMsg Validate.update validateMsg validateModel
+
+        ( ResetPasswordMsg resetPasswordMsg, ResetPasswordPage resetPasswordModel ) ->
+            toPage ResetPasswordPage ResetPasswordMsg ResetPassword.update resetPasswordMsg resetPasswordModel
+
+        ( ChangePasswordMsg changePasswordMsg, ChangePasswordPage changePasswordModel ) ->
+            toPage ChangePasswordPage ChangePasswordMsg ChangePassword.update changePasswordMsg changePasswordModel
 
         ( StoreChanged json, _ ) ->
             ( { model | session = { session | store = Session.deserializeStore json } }
@@ -139,6 +157,12 @@ subscriptions model =
             ValidatePage _ ->
                 Sub.none
 
+            ResetPasswordPage _ ->
+                Sub.none
+
+            ChangePasswordPage _ ->
+                Sub.none
+
             NotFound ->
                 Sub.none
 
@@ -162,10 +186,20 @@ view { page, session } =
                 |> mapMsg HomeMsg
                 |> Page.frame (pageConfig Page.Home)
 
-        ValidatePage counterModel ->
-            Validate.view session counterModel
+        ValidatePage validateModel ->
+            Validate.view session validateModel
                 |> mapMsg ValidateMsg
                 |> Page.frame (pageConfig Page.Validate)
+
+        ResetPasswordPage resetPasswordModel ->
+            ResetPassword.view session resetPasswordModel
+                |> mapMsg ResetPasswordMsg
+                |> Page.frame (pageConfig Page.ResetPassword)
+
+        ChangePasswordPage changePasswordModel ->
+            ChangePassword.view session changePasswordModel
+                |> mapMsg ChangePasswordMsg
+                |> Page.frame (pageConfig Page.ChangePassword)
 
         NotFound ->
             ( "Not Found", [ Html.text "Not found" ] )

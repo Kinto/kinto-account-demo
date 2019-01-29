@@ -12,6 +12,8 @@ import Views.Theme exposing (Element, defaultCss)
 type ActivePage
     = Home
     | Validate
+    | ResetPassword
+    | ChangePassword
     | Other
 
 
@@ -62,5 +64,9 @@ viewHeader { activePage } =
             [ linkIf Home Route.Home "Create an account"
             , text " | "
             , linkIf Validate (Route.Validate "") "Validate your account"
+            , text " | "
+            , linkIf ResetPassword Route.ResetPassword "Reset my password"
+            , text " | "
+            , linkIf ChangePassword (Route.ChangePassword "") "Change my password"
             ]
         ]
